@@ -25,7 +25,63 @@ session-monitor/
 ## 🚀 Instalasi
 
 ### 1. Clone repository
-```bash
 git clone https://github.com/rgunawans/session-monitor.git
 cd session-monitor
 pip3 install -r requirements.txt
+
+----
+sudo nano /etc/systemd/system/session_monitor.service
+
+
+[Unit]
+Description=FortiGate Session Monitor
+After=network.target
+
+[Service]
+ExecStart=/usr/bin/python3 /home/robby/session-monitor/session_monitor.py
+WorkingDirectory=/home/robby/session-monitor
+Restart=always
+RestartSec=10
+User=robby
+
+[Install]
+WantedBy=multi-user.target
+
+---
+sudo systemctl daemon-reexec
+sudo systemctl daemon-reload
+sudo systemctl enable session_monitor
+sudo systemctl start session_monitor
+
+---
+sudo systemctl status session_monitor
+journalctl -u session_monitor -f
+
+---
+sudo nano /etc/systemd/system/session_dashboard.service
+
+---
+
+[Unit]
+Description=FortiGate Session Dashboard
+After=network.target
+
+[Service]
+ExecStart=/usr/bin/python3 /home/robby/session-monitor/web_dashboard.py
+WorkingDirectory=/home/robby/session-monitor
+Restart=always
+RestartSec=10
+User=robby
+
+[Install]
+WantedBy=multi-user.target
+
+
+---
+sudo systemctl daemon-reload
+sudo systemctl enable session_dashboard
+sudo systemctl start session_dashboard
+
+---
+sudo ufw allow 8080/tcp
+
